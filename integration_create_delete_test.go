@@ -25,6 +25,9 @@ echo '%s' > "%s"
 // An integration test that runs an EC2 instance, uses create_command to take a snapshot of it, and then delete_command
 // to delete that snapshot.
 func TestCreateAndDelete(t *testing.T) {
+	if ( testing.Short() ) {
+		t.Skip()
+	}
 	t.Parallel()
 
 	logger, ui := createLoggerAndUi("TestCreateAndDelete")
@@ -43,6 +46,9 @@ func TestCreateAndDelete(t *testing.T) {
 // delete_command to delete that snapshot, but setting the older than parmaeter in a way that should prevent any actual
 // deletion.
 func TestDeleteRespectsOlderThan(t *testing.T) {
+	if ( testing.Short() ) {
+		t.Skip()
+	}
 	t.Parallel()
 
 	logger, ui := createLoggerAndUi("TestDeleteRespectsOlderThan")
@@ -67,6 +73,9 @@ func TestDeleteRespectsOlderThan(t *testing.T) {
 // delete_command to delete that snapshot, but setting the at least parameter in a way that should prevent any actual
 // deletion.
 func TestDeleteRespectsAtLeast(t *testing.T) {
+	if ( testing.Short() ) {
+		t.Skip()
+	}
 	t.Parallel()
 
 	logger, ui := createLoggerAndUi("TestDeleteRespectsAtLeast")
@@ -90,6 +99,9 @@ func TestDeleteRespectsAtLeast(t *testing.T) {
 // An integration test that runs an EC2 instance, does not take any snapshots of it, and then calls the delete_command
 // to ensure that it exits gracefully even if no snapshots exist.
 func TestDeleteHandlesNoSnapshots(t *testing.T) {
+	if ( testing.Short() ) {
+		t.Skip()
+	}
 	t.Parallel()
 
 	logger, ui := createLoggerAndUi("TestDeleteHandlesNoSnapshots")
@@ -104,6 +116,9 @@ func TestDeleteHandlesNoSnapshots(t *testing.T) {
 }
 
 func TestCreateWithInvalidInstanceName(t *testing.T) {
+	if ( testing.Short() ) {
+		t.Skip()
+	}
 	t.Parallel()
 
 	_, ui := createLoggerAndUi("TestCreateWithInvalidInstanceName")
@@ -122,6 +137,9 @@ func TestCreateWithInvalidInstanceName(t *testing.T) {
 }
 
 func TestCreateWithInvalidInstanceId(t *testing.T) {
+	if ( testing.Short() ) {
+		t.Skip()
+	}
 	t.Parallel()
 
 	_, ui := createLoggerAndUi("TestCreateWithInvalidInstanceId")
@@ -140,6 +158,9 @@ func TestCreateWithInvalidInstanceId(t *testing.T) {
 }
 
 func TestDeleteWithInvalidInstanceName(t *testing.T) {
+	if ( testing.Short() ) {
+		t.Skip()
+	}
 	t.Parallel()
 
 	_, ui := createLoggerAndUi("TestDeleteWithInvalidInstanceName")
@@ -159,6 +180,9 @@ func TestDeleteWithInvalidInstanceName(t *testing.T) {
 }
 
 func TestDeleteWithInvalidInstanceId(t *testing.T) {
+	if ( testing.Short() ) {
+		t.Skip()
+	}
 	t.Parallel()
 
 	_, ui := createLoggerAndUi("TestDeleteWithInvalidInstanceId")

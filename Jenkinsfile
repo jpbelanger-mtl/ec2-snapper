@@ -1,0 +1,47 @@
+#!/usr/bin/env groovy
+def slackChannel = '#tech-platform'
+def slackUser
+def now = new Date()
+env.DATE = now.format("yyyyMMdd_HHmm")
+env.VERSION = "${BRANCH_NAME}"
+
+node('build') {
+  stage('Checkout sources') {
+    checkoutTo 'src/github.com/AppDirect/ec2-snapper'
+  }
+
+  stage('Build') {
+    withEnv(["PATH+GO=${tool 'go-default'}/bin", "PATH+GOBIN=${env.WORKSPACE}/bin", "GOPATH=${env.WORKSPACE}"]) {
+      dir("${env.WORKSPACE}/src/github.com/AppDirect/ec2-snapper") {
+        sh 'make depend'
+        sh 'make build'
+      }
+    }
+    archiveArtifacts artifacts: '**/build/*.tgz, **/build/*.zip', fingerprint: true
+  }
+
+  stage('Test') {
+    withEnv(["PATH+GO=${tool 'go-default'}/bin", "PATH+GOBIN=${env.WORKSPACE}/bin", "GOPATH=${env.WORKSPACE}"]) {
+      dir("${env.WORKSPACE}/src/github.com/AppDirect/ec2-snapper") {
+        sh 'make test'
+      }
+    }
+  }
+
+  stage('Docker') {
+   echo "Building image with TAG: ${VERSION}"
+
+   withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'docker-rw', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD']]) {
+    dir("${env.WORKSPACE}/src/github.com/AppDirect/ec2-snapper") {
+      env.DOCKER_CONFIG = "${env.WORKSPACE}/src/github.com/AppDirect/ec2-snapper/.docker"
+      sh 'docker login -u $DOCKER_USER -p $DOCKER_PASSWORD docker.appdirect.tools'
+      def app = docker.build 'docker.appdirect.tools/ec2-snapper:${VERSION}'
+      app.push '${VERSION}'
+    }
+   }
+
+   always {
+    sh 'rm ${env.WORKSPACE}/src/github.com/AppDirect/ec2-snapper/.docker/config.json'
+   }
+  }
+}
